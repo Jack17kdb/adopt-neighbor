@@ -57,7 +57,7 @@ const confirmVolunteer = async(req, res) => {
         try{
 		const { name } = req.body;
 
-		const volunteer = await Volunteer.findOne({ name });
+		const volunteer = await Volunteer.findById(name);
 		if(!volunteer) return res.status(400).json({ message: "Volunteer not found" });
 
 		const match = await Match.findOne({ volunteerId: volunteer._id });
@@ -82,7 +82,7 @@ const confirmNeighbor = async(req, res) => {
         try{
 		const { name } = req.body;
 
-		const neighbor = await Neighbor.findOne({ name });
+		const neighbor = await Neighbor.findById(name);
 		if(!neighbor) return res.status(400).json({ message: "neighbor not found" });
 
 		const match = await Match.findOne({ neighborId: neighbor._id });
@@ -105,7 +105,7 @@ const confirmNeighbor = async(req, res) => {
 
 const rematch = async(req, res) => {
         try{
-		const { matchId } = req.param;
+		const { matchId } = req.params;
 
 		const match = await Match.findById(matchId);
 		const volunteer = await Volunteer.findById(match.volunteerId);

@@ -4,6 +4,6 @@ import emailController from '../controllers/emailController.js';
 
 const router = express.Router();
 
-router.post('/send', protect, emailController.sendCheckIns);
+router.post('/checkin', protect, emailController.sendCheckIns);
 
 export default router;
