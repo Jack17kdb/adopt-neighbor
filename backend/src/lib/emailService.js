@@ -1,6 +1,6 @@
 const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
 
-export async function sendEmail({ to, subject, html }) {
+export default async function sendEmail({ to, subject, html }) {
   try {
     const response = await fetch(BREVO_URL, {
       method: "POST",
@@ -11,7 +11,7 @@ export async function sendEmail({ to, subject, html }) {
       body: JSON.stringify({
         sender: {
           name: "Adopt System",
-          email: "no-reply@myapp.com"
+          email: process.env.EMAIL_ADDRESS
         },
         to: [{ email: to }],
         subject,
@@ -23,7 +23,7 @@ export async function sendEmail({ to, subject, html }) {
 
     if (!response.ok) {
       console.error("Brevo error:", data);
-      throw new Error("Email failed");
+      throw new Error(data.message || "Email failed");
     }
 
     return data;

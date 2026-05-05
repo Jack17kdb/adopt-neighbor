@@ -32,6 +32,11 @@ const volunteerSchema = new mongoose.Schema({
 		type: String,
 		trim: true,
 		default: ""
+	},
+	status: {
+		type: String,
+		enum: ['matched', 'unmatched'],
+		default: 'unmatched'
 	}
 }, { timestamps: true });
 

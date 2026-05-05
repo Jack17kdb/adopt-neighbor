@@ -85,16 +85,12 @@ export const neighborMatchEmail = (neighborName, volunteer) => ({
   `
 });
 
-export const volunteerCheckInEmail = (name, link) => ({
+export const volunteerCheckInEmail = (name) => ({
   subject: "Check-in Reminder",
   html: `
     <p>Dear ${name},</p>
 
     <p>Please check in and let us know how things are going with your neighbor.</p>
-
-    <p>
-      <a href="${link}">Submit Check-In</a>
-    </p>
 
     <p>Thank you for your help.</p>
   `
