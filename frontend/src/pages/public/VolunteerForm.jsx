@@ -3,20 +3,40 @@ import { useNavigate } from 'react-router-dom';
 import { API } from '../../store/authStore';
 import toast from 'react-hot-toast';
 import gsap from 'gsap';
-import { Leaf, ArrowLeft, Heart } from 'lucide-react';
+import { Leaf, ArrowLeft, Heart, Smartphone, X } from 'lucide-react';
 import FormField from '../../components/FormField';
+
+const normalizePhone = (raw) => {
+  const cleaned = raw.replace(/\D/g, '');
+  if (cleaned.startsWith('254')) return cleaned;
+  if (cleaned.startsWith('0')) return '254' + cleaned.slice(1);
+  if (cleaned.startsWith('7') || cleaned.startsWith('1')) return '254' + cleaned;
+  return cleaned;
+};
 
 export default function VolunteerForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', age: '', email: '', phone: '', disability: '', address: '', comment: '' });
   const [loading, setLoading] = useState(false);
+  const [showMpesa, setShowMpesa] = useState(false);
+  const [mpesaForm, setMpesaForm] = useState({ phone: '', amount: '' });
+  const [mpesaLoading, setMpesaLoading] = useState(false);
+  const [phoneDisplay, setPhoneDisplay] = useState('');
   const cardRef = useRef(null);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     gsap.fromTo(cardRef.current, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' });
   }, []);
 
+  useEffect(() => {
+    if (showMpesa && modalRef.current) {
+      gsap.fromTo(modalRef.current, { scale: 0.92, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(1.4)' });
+    }
+  }, [showMpesa]);
+
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
+  const setM = (k, v) => setMpesaForm(p => ({ ...p, [k]: v }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,6 +49,27 @@ export default function VolunteerForm() {
       toast.error(err.response?.data?.message || 'Something went wrong');
     } finally { setLoading(false); }
   };
+
+  const handleMpesa = async (e) => {
+    e.preventDefault();
+    const normalized = normalizePhone(mpesaForm.phone);
+    if (normalized.length !== 12) return toast.error('Enter a valid Safaricom number (07xx or 2547xx)');
+    const amt = parseInt(mpesaForm.amount);
+    if (!amt || amt < 1) return toast.error('Enter a valid amount (minimum KES 1)');
+    setMpesaLoading(true);
+    try {
+      await API.post('/mpesa/stk-push', { phone: normalized, amount: amt });
+      toast.success('STK push sent! Check your phone to confirm.');
+      setShowMpesa(false);
+      setMpesaForm({ phone: '', amount: '' });
+      setPhoneDisplay('');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'M-Pesa request failed. Try again.');
+    } finally { setMpesaLoading(false); }
+  };
+
+  const handlePhoneInput = (raw) => { setPhoneDisplay(raw); setM('phone', raw); };
+  const previewPhone = phoneDisplay ? `Will send to: ${normalizePhone(phoneDisplay)}` : '';
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%)', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
@@ -77,9 +118,70 @@ export default function VolunteerForm() {
               <Heart size={17} />{loading ? 'Submitting...' : 'Register as Volunteer'}
             </button>
           </form>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0' }}>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            <span style={{ fontSize: '12px', color: 'var(--text-light)', fontWeight: 600 }}>WANT TO DO MORE?</span>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+          </div>
+          <button type="button" onClick={() => setShowMpesa(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '13px', borderRadius: '50px', border: '2px solid #00a651', background: 'transparent', color: '#00a651', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#00a651'; e.currentTarget.style.color = 'white'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#00a651'; }}>
+            <Smartphone size={18} /> Contribute via M-Pesa
+          </button>
           <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-light)', marginTop: '16px' }}>No account needed. We'll contact you by email after reviewing your submission.</p>
         </div>
       </div>
+
+      {showMpesa && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setShowMpesa(false)}>
+          <div ref={modalRef} onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '24px', padding: '36px 32px', maxWidth: '420px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.25)' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#e8f7ef', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Smartphone size={22} color="#00a651" />
+                </div>
+                <div>
+                  <h2 className="font-display" style={{ fontSize: '22px', fontWeight: 700, color: 'var(--forest)', lineHeight: 1.1 }}>Contribute via M-Pesa</h2>
+                  <p style={{ fontSize: '13px', color: 'var(--text-light)', marginTop: '4px' }}>100% goes to community care</p>
+                </div>
+              </div>
+              <button onClick={() => setShowMpesa(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-light)', display: 'flex', borderRadius: '8px', transition: 'background 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#f0f0f0'}
+                onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                <X size={18} />
+              </button>
+            </div>
+            <div style={{ background: '#f0faf5', border: '1px solid #c3e8d4', borderRadius: '12px', padding: '12px 16px', marginBottom: '22px', fontSize: '13px', color: '#1a6b3a', lineHeight: 1.6 }}>
+              Your contribution helps cover operational costs and keeps our matching service free for everyone.
+            </div>
+            <form onSubmit={handleMpesa}>
+              <FormField label="Safaricom Number" required hint={previewPhone || 'Enter 07xx, 7xx, or 2547xx format'}>
+                <input className="input-field" type="tel" value={phoneDisplay} onChange={e => handlePhoneInput(e.target.value)} placeholder="0712 345 678" required />
+              </FormField>
+              <FormField label="Amount (KES)" required hint="Minimum KES 1">
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', fontWeight: 600, color: 'var(--text-mid)' }}>KES</span>
+                  <input className="input-field" type="number" value={mpesaForm.amount} onChange={e => setM('amount', e.target.value)} placeholder="500" min="1" required style={{ paddingLeft: '52px' }} />
+                </div>
+              </FormField>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                {[100, 250, 500, 1000].map(amt => (
+                  <button key={amt} type="button" onClick={() => setM('amount', String(amt))} style={{ padding: '7px 16px', borderRadius: '50px', fontSize: '13px', fontWeight: 600, border: mpesaForm.amount === String(amt) ? '2px solid #00a651' : '2px solid var(--border)', background: mpesaForm.amount === String(amt) ? '#e8f7ef' : 'white', color: mpesaForm.amount === String(amt) ? '#00a651' : 'var(--text-mid)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.15s' }}>
+                    {amt}
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button type="button" onClick={() => setShowMpesa(false)} style={{ flex: 1, padding: '13px', borderRadius: '50px', border: '2px solid var(--border)', background: 'transparent', color: 'var(--text-mid)', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Cancel</button>
+                <button type="submit" disabled={mpesaLoading} style={{ flex: 2, padding: '13px', borderRadius: '50px', border: 'none', background: mpesaLoading ? '#7dbf9a' : '#00a651', color: 'white', fontSize: '14px', fontWeight: 600, cursor: mpesaLoading ? 'not-allowed' : 'pointer', fontFamily: 'DM Sans, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}>
+                  <Smartphone size={16} />{mpesaLoading ? 'Sending...' : `Pay KES ${mpesaForm.amount || '—'}`}
+                </button>
+              </div>
+            </form>
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-light)', marginTop: '16px' }}>Secured by Safaricom M-Pesa · You'll get a prompt on your phone</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import gsap from 'gsap';
 import { Leaf, ArrowLeft, Users } from 'lucide-react';
 import FormField from '../../components/FormField';
+import AdBanner from '../../components/AdBanner';
 
 export default function NeighborForm() {
   const navigate = useNavigate();
@@ -67,6 +68,10 @@ export default function NeighborForm() {
             </button>
           </form>
           <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-light)', marginTop: '16px' }}>Your information is kept private and only shared with your matched volunteer.</p>
+        </div>
+        {/* Ad below form card */}
+        <div style={{ maxWidth: '560px', width: '100%', marginTop: '16px' }}>
+          <AdBanner slot="3894664502" format="auto" style={{ borderRadius: '12px', overflow: 'hidden' }} />
         </div>
       </div>
     </div>

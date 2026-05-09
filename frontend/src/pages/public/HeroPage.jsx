@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Leaf, Heart, Users, Shield, Mail, ArrowRight, Star } from 'lucide-react';
+import AdBanner from '../../components/AdBanner';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -151,6 +152,11 @@ export default function HeroPage() {
         </div>
       </section>
 
+      {/* Ad: between stats and how-it-works */}
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 24px' }}>
+        <AdBanner slot="3894664502" format="auto" />
+      </div>
+
       {/* HOW IT WORKS */}
       <section ref={howRef} style={{ padding: '40px 24px 80px', maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '56px' }}>
@@ -207,6 +213,11 @@ export default function HeroPage() {
         </svg>
       </section>
 
+      {/* Ad: between features and CTA */}
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px 0' }}>
+        <AdBanner slot="3894664502" format="auto" />
+      </div>
+
       {/* CTA */}
       <section className="cta-section" style={{ padding: '100px 24px', textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
         <h2 className="font-display" style={{ fontSize: '44px', fontWeight: 700, color: 'var(--forest)', marginBottom: '16px' }}>Ready to make a difference?</h2>
@@ -228,6 +239,7 @@ export default function HeroPage() {
           <span className="font-display" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '15px' }}>Adopt a Neighbor</span>
         </div>
         <p>Connecting communities with compassion · {new Date().getFullYear()}</p>
+        <AdBanner slot="3894664502" format="horizontal" style={{ marginTop: '12px' }} />
       </footer>
     </div>
   );
