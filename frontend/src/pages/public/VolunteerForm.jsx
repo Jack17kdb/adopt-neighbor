@@ -99,7 +99,7 @@ export default function VolunteerForm() {
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
               <FormField label="Full Name" required><input className="input-field" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Jane Doe" required /></FormField>
-              <FormField label="Age" required hint="Under 60, no disability = eligible"><input className="input-field" type="number" value={form.age} onChange={e => set('age', e.target.value)} placeholder="30" required min="18" max="99" /></FormField>
+              <FormField label="Age" required><input className="input-field" type="number" value={form.age} onChange={e => set('age', e.target.value)} placeholder="30" required min="18" max="99" /></FormField>
             </div>
             <FormField label="Email Address" required><input className="input-field" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="jane@example.com" required /></FormField>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
