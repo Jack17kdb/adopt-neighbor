@@ -45,7 +45,7 @@ export default function NeighborForm() {
           <span className="font-display" style={{ color: 'rgba(255,255,255,0.8)', fontSize: '15px' }}>Adopt a Neighbor</span>
         </div>
       </nav>
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 24px 40px' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 24px 40px' }}>
         <div ref={cardRef} style={{ background: 'white', borderRadius: '24px', padding: '40px', maxWidth: '560px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.2)' }}>
           <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
             <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(200,168,75,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
