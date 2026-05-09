@@ -32,12 +32,13 @@ app.use(helmet({
     directives: {
       'default-src': ["'self'"],
       'img-src': ["'self'", 'data:', 'https://*.googlesyndication.com', 'https://*.google.com', 'https://*.doubleclick.net'],
-      'script-src': ["'self'", "'unsafe-inline'", 'https://*.googlesyndication.com', 'https://www.googletagservices.com', 'https://adservice.google.com', 'https://*.google.com', ''https://*.adtrafficquality.google''],
+      'script-src': ["'self'", "'unsafe-inline'", 'https://*.googlesyndication.com', 'https://www.googletagservices.com', 'https://adservice.google.com', 'https://*.google.com', ''https://*.adtrafficquality.google', 'https://adtrafficquality.google'],
       'frame-src': ["'self'", 'https://*.doubleclick.net', 'https://tpc.googlesyndication.com', 'https://*.google.com'],
       'connect-src': [
         "'self'",
         'https://pagead2.googlesyndication.com',
         'https://adservice.google.com',
+        'https://adtrafficquality.google'
         'https://*.adtrafficquality.google',
         'https://*.google.com'
       ],
