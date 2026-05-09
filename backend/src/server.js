@@ -31,10 +31,16 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       'default-src': ["'self'"],
-      'img-src': ["'self'", 'data:', 'https://*.googlesyndication.com', 'https://*.google.com'],
-      'script-src': ["'self'", "'unsafe-inline'", 'https://pagead2.googlesyndication.com', 'https://www.googletagservices.com', 'https://adservice.google.com'],
-      'frame-src': ['https://googleads.g.doubleclick.net', 'https://tpc.googlesyndication.com'],
-      'connect-src': ["'self'", 'https://pagead2.googlesyndication.com', 'https://adservice.google.com'],
+      'img-src': ["'self'", 'data:', 'https://*.googlesyndication.com', 'https://*.google.com', 'https://*.doubleclick.net'],
+      'script-src': ["'self'", "'unsafe-inline'", 'https://*.googlesyndication.com', 'https://www.googletagservices.com', 'https://adservice.google.com', 'https://*.google.com'],
+      'frame-src': ["'self'", 'https://*.doubleclick.net', 'https://tpc.googlesyndication.com', 'https://*.google.com'],
+      'connect-src': [
+        "'self'",
+        'https://pagead2.googlesyndication.com',
+        'https://adservice.google.com',
+        'https://*.adtrafficquality.google',
+        'https://*.google.com'
+      ],
     }
   }
 }));
