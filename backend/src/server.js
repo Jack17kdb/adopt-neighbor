@@ -33,7 +33,7 @@ app.use(helmet({
       'default-src': ["'self'"],
       'img-src': ["'self'", 'data:', 'https://*.googlesyndication.com', 'https://*.google.com', 'https://*.doubleclick.net'],
       'script-src': ["'self'", "'unsafe-inline'", 'https://*.googlesyndication.com', 'https://www.googletagservices.com', 'https://adservice.google.com', 'https://*.google.com', 'https://*.adtrafficquality.google', 'https://adtrafficquality.google', 'https://ep2.adtrafficquality.google'],
-      'frame-src': ["'self'", 'https://*.doubleclick.net', 'https://tpc.googlesyndication.com', 'https://*.google.com'],
+      'frame-src': ["'self'", 'https://*.doubleclick.net', 'https://tpc.googlesyndication.com', 'https://*.google.com', 'https://ep2.adtrafficquality.google'],
       'connect-src': [
         "'self'",
         'https://pagead2.googlesyndication.com',
