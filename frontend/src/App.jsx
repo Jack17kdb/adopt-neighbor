@@ -17,21 +17,48 @@ import StaffPage from './pages/dashboard/StaffPage';
 import StaffDetail from './pages/dashboard/StaffDetail';
 
 function ProtectedRoute({ children }) {
-  const { user } = useAuthStore();
+  const { user, isCheckingAuth } = useAuthStore();
+  
+  if (isCheckingAuth) return null;
   if (!user) return <Navigate to="/staff/login" replace />;
+  
   return children;
 }
 
 function AdminRoute({ children }) {
-  const { user } = useAuthStore();
+  const { user, isCheckingAuth } = useAuthStore();
+  
+  if (isCheckingAuth) return null;
   if (!user) return <Navigate to="/staff/login" replace />;
   if (user.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  
   return children;
 }
 
 export default function App() {
-  const { checkAuth } = useAuthStore();
-  useEffect(() => { checkAuth(); }, []);
+  const { checkAuth, isCheckingAuth } = useAuthStore();
+
+  useEffect(() => { 
+    checkAuth(); 
+  }, [checkAuth]);
+
+  if (isCheckingAuth) {
+    return (
+      <div style={{ 
+        height: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        background: 'var(--bg-light)',
+        color: 'var(--forest)',
+        fontFamily: 'DM Sans, sans-serif'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="loader" style={{ marginBottom: '10px' }}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>
@@ -42,8 +69,14 @@ export default function App() {
         <Route path="/" element={<HeroPage />} />
         <Route path="/volunteer" element={<VolunteerForm />} />
         <Route path="/neighbor" element={<NeighborForm />} />
-        <Route path="/staff/login" element={<LoginPage />} />
-        <Route path="/staff/register" element={<RegisterPage />} />
+        
+        <Route path="/staff/login" element={
+          useAuthStore.getState().user ? <Navigate to="/dashboard" replace /> : <LoginPage />
+        } />
+        <Route path="/staff/register" element={
+          useAuthStore.getState().user ? <Navigate to="/dashboard" replace /> : <RegisterPage />
+        } />
+
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dashboard/volunteers" element={<ProtectedRoute><VolunteersPage /></ProtectedRoute>} />
         <Route path="/dashboard/volunteers/:id" element={<ProtectedRoute><VolunteerDetail /></ProtectedRoute>} />
@@ -52,6 +85,7 @@ export default function App() {
         <Route path="/dashboard/matches" element={<ProtectedRoute><MatchesPage /></ProtectedRoute>} />
         <Route path="/dashboard/staff" element={<AdminRoute><StaffPage /></AdminRoute>} />
         <Route path="/dashboard/staff/:id" element={<AdminRoute><StaffDetail /></AdminRoute>} />
+        
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

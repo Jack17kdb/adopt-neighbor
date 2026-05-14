@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { API } from '../../store/authStore';
 import DashLayout from '../../components/DashLayout';
 import SearchFilter from '../../components/SearchFilter';
-import { Users, ChevronRight } from 'lucide-react';
+import { ChevronRight, CheckCircle, XCircle, Calendar, Phone } from 'lucide-react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export default function VolunteersPage() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [volunteers, setVolunteers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -14,10 +16,7 @@ export default function VolunteersPage() {
   const [filterEligibility, setFilterEligibility] = useState('');
 
   useEffect(() => {
-    API.get('/admin/volunteers')
-      .then(r => setVolunteers(r.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    API.get('/admin/volunteers').then(r => setVolunteers(r.data)).finally(() => setLoading(false));
   }, []);
 
   const filtered = volunteers.filter(v => {
@@ -29,58 +28,60 @@ export default function VolunteersPage() {
   });
 
   return (
-    <DashLayout title="Volunteers" subtitle={`${volunteers.length} registered volunteers`}>
-      <SearchFilter value={search} onChange={setSearch} placeholder="Search by name, email or phone...">
-        <select className="input-field" style={{ width: 'auto', minWidth: '140px' }} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-          <option value="">All Statuses</option>
-          <option value="unmatched">Unmatched</option>
-          <option value="matched">Matched</option>
-        </select>
-        <select className="input-field" style={{ width: 'auto', minWidth: '150px' }} value={filterEligibility} onChange={e => setFilterEligibility(e.target.value)}>
-          <option value="">All Eligibilities</option>
-          <option value="eligible">Eligible</option>
-          <option value="ineligible">Not Eligible</option>
-        </select>
+    <DashLayout title="Volunteers" subtitle={`${volunteers.length} total`}>
+      <SearchFilter value={search} onChange={setSearch} placeholder="Search volunteers...">
+        <div style={{ display: 'flex', gap: '8px', flexWrap: isMobile ? 'wrap' : 'nowrap', width: isMobile ? '100%' : 'auto' }}>
+          <select className="input-field" style={{ flex: 1 }} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+            <option value="">Statuses</option>
+            <option value="unmatched">Unmatched</option>
+            <option value="matched">Matched</option>
+          </select>
+          <select className="input-field" style={{ flex: 1 }} value={filterEligibility} onChange={e => setFilterEligibility(e.target.value)}>
+            <option value="">Eligibility</option>
+            <option value="eligible">Eligible</option>
+            <option value="ineligible">Ineligible</option>
+          </select>
+        </div>
       </SearchFilter>
 
-      <div className="card" style={{ overflow: 'hidden' }}>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-light)' }}>Loading...</div>
-        ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-light)' }}>
-            <Users size={40} style={{ margin: '0 auto 12px', display: 'block', opacity: 0.25 }} />
-            No volunteers found
-          </div>
-        ) : (
+      {loading ? (
+        <div className="card" style={{ textAlign: 'center', padding: '48px' }}>Loading...</div>
+      ) : isMobile ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {filtered.map(v => (
+            <div key={v._id} className="card" style={{ padding: '16px' }} onClick={() => navigate(`/dashboard/volunteers/${v._id}`)}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 700 }}>{v.name}</span>
+                <span className={`badge badge-${v.status}`}>{v.status}</span>
+              </div>
+              <div style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-mid)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Phone size={14}/> {v.phone}
+              </div>
+              <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: v.eligibility ? 'var(--forest)' : '#991b1b' }}>
+                {v.eligibility ? <CheckCircle size={14}/> : <XCircle size={14}/>}
+                {v.eligibility ? 'Eligible' : 'Ineligible'}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="card" style={{ overflowX: 'auto' }}>
           <table className="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Eligibility</th>
-                <th>Status</th>
-                <th>Joined</th>
-                <th></th>
-              </tr>
-            </thead>
+            <thead><tr><th>Name</th><th>Email</th><th>Eligibility</th><th>Status</th><th></th></tr></thead>
             <tbody>
               {filtered.map(v => (
                 <tr key={v._id} className="clickable" onClick={() => navigate(`/dashboard/volunteers/${v._id}`)}>
                   <td style={{ fontWeight: 600 }}>{v.name}</td>
                   <td style={{ color: 'var(--text-mid)' }}>{v.email}</td>
-                  <td style={{ color: 'var(--text-mid)' }}>{v.phone}</td>
-                  <td><span className={`badge badge-${v.eligibility ? 'eligible' : 'ineligible'}`}>{v.eligibility ? 'Eligible' : 'Not Eligible'}</span></td>
+                  <td>{v.eligibility ? <CheckCircle size={16} color="#1a3a2a"/> : <XCircle size={16} color="#991b1b"/>}</td>
                   <td><span className={`badge badge-${v.status}`}>{v.status}</span></td>
-                  <td style={{ color: 'var(--text-light)', fontSize: '13px' }}>{new Date(v.createdAt).toLocaleDateString()}</td>
-                  <td><ChevronRight size={16} color="var(--text-light)" /></td>
+                  <td><ChevronRight size={16}/></td>
                 </tr>
               ))}
             </tbody>
           </table>
-        )}
-      </div>
-      <p style={{ fontSize: '13px', color: 'var(--text-light)', marginTop: '12px' }}>Showing {filtered.length} of {volunteers.length} volunteers</p>
+        </div>
+      )}
     </DashLayout>
   );
 }

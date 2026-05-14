@@ -6,6 +6,7 @@ import adminController from '../controllers/adminController.js';
 const router = express.Router();
 
 router.get('/staff', protect, admin, adminController.getStaffMembers);
+router.post('/staff', protect, admin, adminController.addStaffMember);
 router.get('/volunteers', protect, adminController.getVolunteers);
 router.get('/neighbors', protect, adminController.getNeighbors);
 router.get('/staff/:staffId', protect, admin, adminController.getStaffMember);

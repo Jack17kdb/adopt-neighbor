@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import User from '../models/userModel.js';
 import Match from '../models/matchModel.js';
 import Volunteer from '../models/volunteerModel.js';
@@ -10,6 +11,34 @@ const getStaffMembers = async(req, res) => {
 	} catch(error) {
 		console.log("Error fetching members: ", error);
 		res.status(500).json({ message: "Error fetching members" });
+	}
+};
+
+const addStaffMember = async(req, res) => {
+	try{
+		const { username, email, password } = req.body;
+		if(!username || !email || !password) return res.status(400).json({ message: "Please enter all details" });
+
+		const exists = await User.findOne({
+			$or: [{username}, {email}]
+		});
+
+		if(exists) return res.status(400).json({ message: "Username or Email already exists" });
+
+		const salt = await bcrypt.genSalt(10);
+		const hash = await bcrypt.hash(password, salt);
+
+		const newStaff = await User.create({
+			username,
+			email,
+			password: hash,
+			role: "staff"
+		});
+
+		res.status(200).json({ message: "Staff member created successfully" });
+	} catch(error) {
+		console.log("Error adding member: ", error);
+		res.status(500).json({ message: "Error adding member" });
 	}
 };
 
@@ -75,4 +104,4 @@ const getNeighbor = async(req, res) => {
 	}
 };
 
-export default { getStaffMembers, getStaffMember, getVolunteers, getVolunteer, getNeighbors, getNeighbor };
+export default { getStaffMembers, addStaffMember, getStaffMember, getVolunteers, getVolunteer, getNeighbors, getNeighbor };

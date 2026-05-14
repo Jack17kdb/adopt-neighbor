@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { API } from '../../store/authStore';
 import DashLayout from '../../components/DashLayout';
 import { ArrowLeft, Home } from 'lucide-react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export default function NeighborDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [n, setN] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,23 +17,32 @@ export default function NeighborDetail() {
       .then(r => setN(r.data))
       .catch(() => navigate('/dashboard/neighbors'))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, navigate]);
 
-  if (loading) return <DashLayout><div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-light)' }}>Loading...</div></DashLayout>;
+  if (loading) return <DashLayout><div style={{ textAlign: 'center', padding: '60px' }}>Loading...</div></DashLayout>;
   if (!n) return null;
+
+  const detailRowStyle = {
+    display: 'flex',
+    flexDirection: isMobile ? 'column' : 'row',
+    justifyContent: 'space-between',
+    padding: '16px 0',
+    borderBottom: '1px solid var(--border)',
+    gap: isMobile ? '4px' : '20px'
+  };
 
   return (
     <DashLayout
       title="Neighbor Details"
       action={
-        <button className="btn-outline" onClick={() => navigate('/dashboard/neighbors')} style={{ padding: '10px 20px', fontSize: '14px' }}>
-          <ArrowLeft size={15} /> Back to Neighbors
+        <button className="btn-outline" onClick={() => navigate('/dashboard/neighbors')}>
+          <ArrowLeft size={15} /> Back
         </button>
       }
     >
-      <div style={{ maxWidth: '680px' }}>
-        <div className="card" style={{ padding: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '28px', paddingBottom: '24px', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+        <div className="card" style={{ padding: 'clamp(20px, 5vw, 32px)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '28px', paddingBottom: '24px', borderBottom: '1px solid var(--border)', flexWrap: 'wrap' }}>
             <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(200,168,75,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Home size={28} color="var(--gold)" />
             </div>
@@ -46,11 +57,11 @@ export default function NeighborDetail() {
             { label: 'Address', value: n.address },
             { label: 'Needs', value: n.needs },
             { label: 'Comments', value: n.comments || n.comment || '—' },
-            { label: 'Joined', value: new Date(n.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) },
+            { label: 'Joined', value: new Date(n.createdAt).toLocaleDateString() },
           ].map(({ label, value }) => (
-            <div key={label} className="detail-row">
-              <span className="detail-label">{label}</span>
-              <span className="detail-value">{value}</span>
+            <div key={label} style={detailRowStyle}>
+              <span style={{ fontWeight: 600, color: 'var(--text-light)', fontSize: '13px', textTransform: 'uppercase' }}>{label}</span>
+              <span style={{ color: 'var(--text-dark)', lineHeight: 1.5 }}>{value}</span>
             </div>
           ))}
         </div>

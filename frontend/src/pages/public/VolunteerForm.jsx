@@ -22,6 +22,7 @@ export default function VolunteerForm() {
   const [mpesaForm, setMpesaForm] = useState({ phone: '', amount: '' });
   const [mpesaLoading, setMpesaLoading] = useState(false);
   const [phoneDisplay, setPhoneDisplay] = useState('');
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const cardRef = useRef(null);
   const modalRef = useRef(null);
 
@@ -35,6 +36,12 @@ export default function VolunteerForm() {
     }
   }, [showMpesa]);
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
   const setM = (k, v) => setMpesaForm(p => ({ ...p, [k]: v }));
 
@@ -47,7 +54,9 @@ export default function VolunteerForm() {
       setTimeout(() => navigate('/'), 1800);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Something went wrong');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleMpesa = async (e) => {
@@ -65,45 +74,201 @@ export default function VolunteerForm() {
       setPhoneDisplay('');
     } catch (err) {
       toast.error(err.response?.data?.message || 'M-Pesa request failed. Try again.');
-    } finally { setMpesaLoading(false); }
+    } finally {
+      setMpesaLoading(false);
+    }
   };
 
-  const handlePhoneInput = (raw) => { setPhoneDisplay(raw); setM('phone', raw); };
+  const handlePhoneInput = (raw) => {
+    setPhoneDisplay(raw);
+    setM('phone', raw);
+  };
+
   const previewPhone = phoneDisplay ? `Will send to: ${normalizePhone(phoneDisplay)}` : '';
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%)', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: 'rgba(200,168,75,0.07)', pointerEvents: 'none' }} />
-      <nav style={{ padding: '20px 32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <button onClick={() => navigate('/')} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '8px 16px', borderRadius: '50px', fontSize: '14px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', display: 'flex', alignItems: 'center', gap: '6px' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflowX: 'hidden'
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: '-80px',
+          right: '-80px',
+          width: isMobile ? '240px' : '400px',
+          height: isMobile ? '240px' : '400px',
+          borderRadius: '50%',
+          background: 'rgba(200,168,75,0.07)',
+          pointerEvents: 'none'
+        }}
+      />
+
+      <nav
+        style={{
+          padding: isMobile ? '16px 18px' : '20px 32px',
+          display: 'flex',
+          alignItems: isMobile ? 'flex-start' : 'center',
+          justifyContent: 'space-between',
+          gap: '14px',
+          flexWrap: 'wrap'
+        }}
+      >
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            background: 'rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: '50px',
+            fontSize: '14px',
+            cursor: 'pointer',
+            fontFamily: 'DM Sans, sans-serif',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            whiteSpace: 'nowrap'
+          }}
+        >
           <ArrowLeft size={16} /> Back
         </button>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '8px',
+              background: 'var(--gold)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}
+          >
             <Leaf size={14} color="white" />
           </div>
-          <span className="font-display" style={{ color: 'rgba(255,255,255,0.8)', fontSize: '15px' }}>Adopt a Neighbor</span>
+
+          <span
+            className="font-display"
+            style={{
+              color: 'rgba(255,255,255,0.8)',
+              fontSize: isMobile ? '14px' : '15px'
+            }}
+          >
+            Adopt a Neighbor
+          </span>
         </div>
       </nav>
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 24px 40px' }}>
-        <div ref={cardRef} style={{ background: 'white', borderRadius: '24px', padding: '40px', maxWidth: '560px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.2)' }}>
-          <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(26,58,42,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Heart size={24} color="var(--forest)" />
+
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: isMobile ? '12px 14px 24px' : '24px 24px 40px'
+        }}
+      >
+        <div
+          ref={cardRef}
+          style={{
+            background: 'white',
+            borderRadius: isMobile ? '20px' : '24px',
+            padding: isMobile ? '24px 18px' : '40px',
+            maxWidth: '560px',
+            width: '100%',
+            boxShadow: '0 24px 80px rgba(0,0,0,0.2)'
+          }}
+        >
+          <div
+            style={{
+              marginBottom: '32px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: isMobile ? '12px' : '16px'
+            }}
+          >
+            <div
+              style={{
+                width: isMobile ? '46px' : '52px',
+                height: isMobile ? '46px' : '52px',
+                borderRadius: '14px',
+                background: 'rgba(26,58,42,0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}
+            >
+              <Heart size={isMobile ? 20 : 24} color="var(--forest)" />
             </div>
+
             <div>
-              <h1 className="font-display" style={{ fontSize: '28px', fontWeight: 700, color: 'var(--forest)', lineHeight: 1.1 }}>I Can Help</h1>
-              <p style={{ color: 'var(--text-light)', fontSize: '14px', marginTop: '6px', lineHeight: 1.6 }}>Wonderful! Fill in your details and our team will match you with a neighbor who needs your kindness.</p>
+              <h1
+                className="font-display"
+                style={{
+                  fontSize: isMobile ? '24px' : '28px',
+                  fontWeight: 700,
+                  color: 'var(--forest)',
+                  lineHeight: 1.1
+                }}
+              >
+                I Can Help
+              </h1>
+
+              <p
+                style={{
+                  color: 'var(--text-light)',
+                  fontSize: '14px',
+                  marginTop: '6px',
+                  lineHeight: 1.6
+                }}
+              >
+                Wonderful! Fill in your details and our team will match you with a neighbor who needs your kindness.
+              </p>
             </div>
           </div>
+
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-              <FormField label="Full Name" required><input className="input-field" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Jane Doe" required /></FormField>
-              <FormField label="Age" required><input className="input-field" type="number" value={form.age} onChange={e => set('age', e.target.value)} placeholder="30" required min="18" max="99" /></FormField>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                gap: isMobile ? '0' : '0 16px'
+              }}
+            >
+              <FormField label="Full Name" required>
+                <input className="input-field" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Jane Doe" required />
+              </FormField>
+
+              <FormField label="Age" required>
+                <input className="input-field" type="number" value={form.age} onChange={e => set('age', e.target.value)} placeholder="30" required min="18" max="99" />
+              </FormField>
             </div>
-            <FormField label="Email Address" required><input className="input-field" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="jane@example.com" required /></FormField>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-              <FormField label="Phone Number" required><input className="input-field" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+254 700 000000" required /></FormField>
+
+            <FormField label="Email Address" required>
+              <input className="input-field" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="jane@example.com" required />
+            </FormField>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                gap: isMobile ? '0' : '0 16px'
+              }}
+            >
+              <FormField label="Phone Number" required>
+                <input className="input-field" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+254 700 000000" required />
+              </FormField>
+
               <FormField label="Do you have a disability?" required>
                 <select className="input-field" value={form.disability} onChange={e => set('disability', e.target.value)} required>
                   <option value="">Select...</option>
@@ -112,73 +277,350 @@ export default function VolunteerForm() {
                 </select>
               </FormField>
             </div>
-            <FormField label="Home Address" required><input className="input-field" value={form.address} onChange={e => set('address', e.target.value)} placeholder="123 Maple Street, Nairobi" required /></FormField>
-            <FormField label="Why do you want to volunteer?" required><textarea className="input-field" value={form.comment} onChange={e => set('comment', e.target.value)} placeholder="Tell us about yourself and why you'd like to help..." required /></FormField>
-            <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '15px', marginTop: '8px' }}>
-              <Heart size={17} />{loading ? 'Submitting...' : 'Register as Volunteer'}
+
+            <FormField label="Home Address" required>
+              <input className="input-field" value={form.address} onChange={e => set('address', e.target.value)} placeholder="123 Maple Street, Nairobi" required />
+            </FormField>
+
+            <FormField label="Why do you want to volunteer?" required>
+              <textarea className="input-field" value={form.comment} onChange={e => set('comment', e.target.value)} placeholder="Tell us about yourself and why you'd like to help..." required />
+            </FormField>
+
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={loading}
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                padding: '14px',
+                fontSize: '15px',
+                marginTop: '8px'
+              }}
+            >
+              <Heart size={17} />
+              {loading ? 'Submitting...' : 'Register as Volunteer'}
             </button>
           </form>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0' }}>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              margin: '20px 0'
+            }}
+          >
             <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-            <span style={{ fontSize: '12px', color: 'var(--text-light)', fontWeight: 600 }}>WANT TO DO MORE?</span>
+
+            <span
+              style={{
+                fontSize: '12px',
+                color: 'var(--text-light)',
+                fontWeight: 600,
+                textAlign: 'center',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              WANT TO DO MORE?
+            </span>
+
             <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
           </div>
-          <button type="button" onClick={() => setShowMpesa(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '13px', borderRadius: '50px', border: '2px solid #00a651', background: 'transparent', color: '#00a651', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#00a651'; e.currentTarget.style.color = 'white'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#00a651'; }}>
-            <Smartphone size={18} /> Contribute via M-Pesa
+
+          <button
+            type="button"
+            onClick={() => setShowMpesa(true)}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              padding: '13px',
+              borderRadius: '50px',
+              border: '2px solid #00a651',
+              background: 'transparent',
+              color: '#00a651',
+              fontSize: isMobile ? '14px' : '15px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: 'DM Sans, sans-serif',
+              transition: 'all 0.2s',
+              textAlign: 'center'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#00a651';
+              e.currentTarget.style.color = 'white';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#00a651';
+            }}
+          >
+            <Smartphone size={18} />
+            Contribute via M-Pesa
           </button>
-          <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-light)', marginTop: '16px' }}>No account needed. We'll contact you by email after reviewing your submission.</p>
+
+          <p
+            style={{
+              textAlign: 'center',
+              fontSize: '13px',
+              color: 'var(--text-light)',
+              marginTop: '16px',
+              lineHeight: 1.6
+            }}
+          >
+            No account needed. We'll contact you by email after reviewing your submission.
+          </p>
         </div>
       </div>
 
       {showMpesa && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setShowMpesa(false)}>
-          <div ref={modalRef} onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '24px', padding: '36px 32px', maxWidth: '420px', width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.25)' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#e8f7ef', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.55)',
+            backdropFilter: 'blur(6px)',
+            zIndex: 200,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: isMobile ? '14px' : '20px',
+            overflowY: 'auto'
+          }}
+          onClick={() => setShowMpesa(false)}
+        >
+          <div
+            ref={modalRef}
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'white',
+              borderRadius: '24px',
+              padding: isMobile ? '24px 18px' : '36px 32px',
+              maxWidth: '420px',
+              width: '100%',
+              boxShadow: '0 24px 80px rgba(0,0,0,0.25)',
+              margin: isMobile ? '20px 0' : '0'
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                marginBottom: '24px',
+                gap: '10px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: 0 }}>
+                <div
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '14px',
+                    background: '#e8f7ef',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}
+                >
                   <Smartphone size={22} color="#00a651" />
                 </div>
-                <div>
-                  <h2 className="font-display" style={{ fontSize: '22px', fontWeight: 700, color: 'var(--forest)', lineHeight: 1.1 }}>Contribute via M-Pesa</h2>
-                  <p style={{ fontSize: '13px', color: 'var(--text-light)', marginTop: '4px' }}>100% goes to community care</p>
+
+                <div style={{ minWidth: 0 }}>
+                  <h2
+                    className="font-display"
+                    style={{
+                      fontSize: isMobile ? '20px' : '22px',
+                      fontWeight: 700,
+                      color: 'var(--forest)',
+                      lineHeight: 1.1
+                    }}
+                  >
+                    Contribute via M-Pesa
+                  </h2>
+
+                  <p
+                    style={{
+                      fontSize: '13px',
+                      color: 'var(--text-light)',
+                      marginTop: '4px',
+                      lineHeight: 1.5
+                    }}
+                  >
+                    100% goes to community care
+                  </p>
                 </div>
               </div>
-              <button onClick={() => setShowMpesa(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-light)', display: 'flex', borderRadius: '8px', transition: 'background 0.2s' }}
+
+              <button
+                onClick={() => setShowMpesa(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  color: 'var(--text-light)',
+                  display: 'flex',
+                  borderRadius: '8px',
+                  transition: 'background 0.2s',
+                  flexShrink: 0
+                }}
                 onMouseEnter={e => e.currentTarget.style.background = '#f0f0f0'}
-                onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                onMouseLeave={e => e.currentTarget.style.background = 'none'}
+              >
                 <X size={18} />
               </button>
             </div>
-            <div style={{ background: '#f0faf5', border: '1px solid #c3e8d4', borderRadius: '12px', padding: '12px 16px', marginBottom: '22px', fontSize: '13px', color: '#1a6b3a', lineHeight: 1.6 }}>
+
+            <div
+              style={{
+                background: '#f0faf5',
+                border: '1px solid #c3e8d4',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                marginBottom: '22px',
+                fontSize: '13px',
+                color: '#1a6b3a',
+                lineHeight: 1.6
+              }}
+            >
               Your contribution helps cover operational costs and keeps our matching service free for everyone.
             </div>
+
             <form onSubmit={handleMpesa}>
               <FormField label="Safaricom Number" required hint={previewPhone || 'Enter 07xx, 7xx, or 2547xx format'}>
                 <input className="input-field" type="tel" value={phoneDisplay} onChange={e => handlePhoneInput(e.target.value)} placeholder="0712 345 678" required />
               </FormField>
+
               <FormField label="Amount (KES)" required hint="Minimum KES 1">
                 <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', fontWeight: 600, color: 'var(--text-mid)' }}>KES</span>
-                  <input className="input-field" type="number" value={mpesaForm.amount} onChange={e => setM('amount', e.target.value)} placeholder="500" min="1" required style={{ paddingLeft: '52px' }} />
+                  <span
+                    style={{
+                      position: 'absolute',
+                      left: '14px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: 'var(--text-mid)'
+                    }}
+                  >
+                    KES
+                  </span>
+
+                  <input
+                    className="input-field"
+                    type="number"
+                    value={mpesaForm.amount}
+                    onChange={e => setM('amount', e.target.value)}
+                    placeholder="500"
+                    min="1"
+                    required
+                    style={{ paddingLeft: '52px' }}
+                  />
                 </div>
               </FormField>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '8px',
+                  marginBottom: '20px',
+                  flexWrap: 'wrap'
+                }}
+              >
                 {[100, 250, 500, 1000].map(amt => (
-                  <button key={amt} type="button" onClick={() => setM('amount', String(amt))} style={{ padding: '7px 16px', borderRadius: '50px', fontSize: '13px', fontWeight: 600, border: mpesaForm.amount === String(amt) ? '2px solid #00a651' : '2px solid var(--border)', background: mpesaForm.amount === String(amt) ? '#e8f7ef' : 'white', color: mpesaForm.amount === String(amt) ? '#00a651' : 'var(--text-mid)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.15s' }}>
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setM('amount', String(amt))}
+                    style={{
+                      padding: '7px 16px',
+                      borderRadius: '50px',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      border: mpesaForm.amount === String(amt) ? '2px solid #00a651' : '2px solid var(--border)',
+                      background: mpesaForm.amount === String(amt) ? '#e8f7ef' : 'white',
+                      color: mpesaForm.amount === String(amt) ? '#00a651' : 'var(--text-mid)',
+                      cursor: 'pointer',
+                      fontFamily: 'DM Sans, sans-serif',
+                      transition: 'all 0.15s'
+                    }}
+                  >
                     {amt}
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button type="button" onClick={() => setShowMpesa(false)} style={{ flex: 1, padding: '13px', borderRadius: '50px', border: '2px solid var(--border)', background: 'transparent', color: 'var(--text-mid)', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>Cancel</button>
-                <button type="submit" disabled={mpesaLoading} style={{ flex: 2, padding: '13px', borderRadius: '50px', border: 'none', background: mpesaLoading ? '#7dbf9a' : '#00a651', color: 'white', fontSize: '14px', fontWeight: 600, cursor: mpesaLoading ? 'not-allowed' : 'pointer', fontFamily: 'DM Sans, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}>
-                  <Smartphone size={16} />{mpesaLoading ? 'Sending...' : `Pay KES ${mpesaForm.amount || '—'}`}
+
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  gap: '12px'
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setShowMpesa(false)}
+                  style={{
+                    flex: 1,
+                    padding: '13px',
+                    borderRadius: '50px',
+                    border: '2px solid var(--border)',
+                    background: 'transparent',
+                    color: 'var(--text-mid)',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    fontFamily: 'DM Sans, sans-serif'
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={mpesaLoading}
+                  style={{
+                    flex: 2,
+                    padding: '13px',
+                    borderRadius: '50px',
+                    border: 'none',
+                    background: mpesaLoading ? '#7dbf9a' : '#00a651',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    cursor: mpesaLoading ? 'not-allowed' : 'pointer',
+                    fontFamily: 'DM Sans, sans-serif',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    transition: 'background 0.2s',
+                    width: '100%'
+                  }}
+                >
+                  <Smartphone size={16} />
+                  {mpesaLoading ? 'Sending...' : `Pay KES ${mpesaForm.amount || '—'}`}
                 </button>
               </div>
             </form>
-            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-light)', marginTop: '16px' }}>Secured by Safaricom M-Pesa · You'll get a prompt on your phone</p>
+
+            <p
+              style={{
+                textAlign: 'center',
+                fontSize: '12px',
+                color: 'var(--text-light)',
+                marginTop: '16px',
+                lineHeight: 1.6
+              }}
+            >
+              Secured by Safaricom M-Pesa · You'll get a prompt on your phone
+            </p>
           </div>
         </div>
       )}

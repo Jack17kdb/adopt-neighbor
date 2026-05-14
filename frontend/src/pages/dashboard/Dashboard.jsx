@@ -24,13 +24,9 @@ export default function Dashboard() {
   const [recentMatches, setRecentMatches] = useState([]);
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  // Balance state (admin only)
   const [balance, setBalance] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [balanceLoading, setBalanceLoading] = useState(false);
-
-  // Withdraw modal
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [withdrawForm, setWithdrawForm] = useState({ phone: '', amount: '', reason: 'BusinessPayment' });
   const [phoneDisplay, setPhoneDisplay] = useState('');
@@ -110,30 +106,29 @@ export default function Dashboard() {
       action={
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           {user?.role === 'admin' && (
-            <button className="btn-outline" onClick={() => setShowWithdraw(true)} style={{ padding: '10px 20px', fontSize: '14px', borderColor: '#00a651', color: '#00a651' }}
+            <button className="btn-outline" onClick={() => setShowWithdraw(true)} style={{ padding: '10px 20px', fontSize: '14px', borderColor: '#00a651', color: '#00a651', flex: '1 1 auto' }}
               onMouseEnter={e => { e.currentTarget.style.background = '#00a651'; e.currentTarget.style.color = 'white'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#00a651'; }}>
               <ArrowUpRight size={16} /> Withdraw
             </button>
           )}
-          <button className="btn-primary" onClick={sendCheckIns} disabled={sending}>
+          <button className="btn-primary" onClick={sendCheckIns} disabled={sending} style={{ flex: '1 1 auto' }}>
             <Mail size={16} /> {sending ? 'Sending...' : 'Send Check-in Emails'}
           </button>
         </div>
       }
     >
-      {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '20px', marginBottom: '28px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '28px' }}>
         <StatCard label="Total Volunteers" value={loading ? '...' : stats.volunteers} icon={Users} color="var(--forest)" />
         <StatCard label="Total Neighbors" value={loading ? '...' : stats.neighbors} icon={Heart} color="var(--gold)" />
         <StatCard label="Total Matches" value={loading ? '...' : stats.matches} icon={GitMerge} color="var(--forest-light)" />
         <StatCard label="Confirmed Matches" value={loading ? '...' : stats.confirmed} icon={CheckCircle} color="#22a06b" sub="Both sides confirmed" />
         {user?.role === 'admin' && (
-          <div className="stat-card" style={{ gridColumn: 'span 1', position: 'relative' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div className="stat-card" style={{ gridColumn: '1 / -1', position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px' }}>
               <div>
                 <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-light)', marginBottom: '10px' }}>Account Balance</p>
-                <p className="font-display" style={{ fontSize: '36px', fontWeight: 700, color: '#00a651', lineHeight: 1 }}>
+                <p className="font-display" style={{ fontSize: 'min(36px, 8vw)', fontWeight: 700, color: '#00a651', lineHeight: 1 }}>
                   {balanceLoading ? '...' : balance === null ? '—' : `KES ${balance.toLocaleString()}`}
                 </p>
                 <p style={{ fontSize: '12px', marginTop: '6px', color: 'var(--text-light)' }}>M-Pesa contributions</p>
@@ -153,10 +148,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Main grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: user?.role === 'admin' ? '1fr 1fr 1.4fr' : '1fr 1.6fr', gap: '20px', alignItems: 'start' }}>
-
-        {/* Quick actions */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '20px', alignItems: 'start' }}>
         <div className="card" style={{ padding: '24px' }}>
           <h3 className="font-display" style={{ fontSize: '18px', fontWeight: 700, color: 'var(--forest)', marginBottom: '18px' }}>Quick Actions</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -178,7 +170,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Transactions (admin only) */}
         {user?.role === 'admin' && (
           <div className="card" style={{ padding: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
@@ -219,7 +210,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Recent Matches */}
         <div className="card" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
             <h3 className="font-display" style={{ fontSize: '18px', fontWeight: 700, color: 'var(--forest)' }}>Recent Matches</h3>
@@ -236,15 +226,15 @@ export default function Dashboard() {
                 <div key={m._id} onClick={() => navigate('/dashboard/matches')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid var(--border)', borderRadius: '10px', background: '#fafaf8', cursor: 'pointer', transition: 'background 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.background = '#f0f0ec'}
                   onMouseLeave={e => e.currentTarget.style.background = '#fafaf8'}>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-dark)' }}>
+                  <div style={{ overflow: 'hidden', marginRight: '8px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-dark)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                       {m.volunteerId?.name || 'Volunteer'} → {m.neighborId?.name || 'Neighbor'}
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '2px' }}>
                       {new Date(m.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <span className={`badge badge-${m.status}`}>{m.status}</span>
+                  <span className={`badge badge-${m.status}`} style={{ flexShrink: 0 }}>{m.status}</span>
                 </div>
               ))}
             </div>
@@ -252,7 +242,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Withdraw Modal */}
       <Modal open={showWithdraw} onClose={() => { setShowWithdraw(false); setWithdrawForm({ phone: '', amount: '', reason: 'BusinessPayment' }); setPhoneDisplay(''); }} title="Withdraw Funds">
         <div style={{ background: '#f0faf5', border: '1px solid #c3e8d4', borderRadius: '12px', padding: '14px 16px', marginBottom: '22px' }}>
           <div style={{ fontSize: '12px', color: 'var(--text-light)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Available Balance</div>
@@ -280,9 +269,9 @@ export default function Dashboard() {
           <div style={{ background: '#fff8e6', border: '1px solid #f0d080', borderRadius: '10px', padding: '10px 14px', marginBottom: '20px', fontSize: '13px', color: '#8a6000' }}>
             ⚠️ This will initiate a real M-Pesa B2C transfer. Please double-check the number and amount.
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button type="button" className="btn-outline" onClick={() => setShowWithdraw(false)} style={{ flex: 1, justifyContent: 'center', padding: '12px' }}>Cancel</button>
-            <button type="submit" disabled={withdrawing} style={{ flex: 2, padding: '13px', borderRadius: '50px', border: 'none', background: withdrawing ? '#7dbf9a' : '#00a651', color: 'white', fontSize: '14px', fontWeight: 600, cursor: withdrawing ? 'not-allowed' : 'pointer', fontFamily: 'DM Sans, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button type="button" className="btn-outline" onClick={() => setShowWithdraw(false)} style={{ flex: '1 1 100px', justifyContent: 'center', padding: '12px' }}>Cancel</button>
+            <button type="submit" disabled={withdrawing} style={{ flex: '2 1 150px', padding: '13px', borderRadius: '50px', border: 'none', background: withdrawing ? '#7dbf9a' : '#00a651', color: 'white', fontSize: '14px', fontWeight: 600, cursor: withdrawing ? 'not-allowed' : 'pointer', fontFamily: 'DM Sans, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}>
               <ArrowUpRight size={16} />{withdrawing ? 'Processing...' : `Withdraw KES ${withdrawForm.amount || '—'}`}
             </button>
           </div>

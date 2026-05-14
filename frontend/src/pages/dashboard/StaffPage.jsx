@@ -3,80 +3,63 @@ import { useNavigate } from 'react-router-dom';
 import { API } from '../../store/authStore';
 import DashLayout from '../../components/DashLayout';
 import SearchFilter from '../../components/SearchFilter';
-import { UserCog, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export default function StaffPage() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('');
 
   useEffect(() => {
-    API.get('/admin/staff')
-      .then(r => setStaff(r.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    API.get('/admin/staff').then(r => setStaff(r.data)).finally(() => setLoading(false));
   }, []);
 
   const filtered = staff.filter(s => {
     const q = search.toLowerCase();
-    const matchQ = !q || s.username.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
-    const matchR = !filterRole || s.role === filterRole;
-    return matchQ && matchR;
+    return (!q || s.username.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)) && (!filterRole || s.role === filterRole);
   });
 
   return (
-    <DashLayout title="Staff Members" subtitle={`${staff.length} staff members`}>
-      <SearchFilter value={search} onChange={setSearch} placeholder="Search by username or email...">
-        <select className="input-field" style={{ width: 'auto', minWidth: '130px' }} value={filterRole} onChange={e => setFilterRole(e.target.value)}>
+    <DashLayout title="Staff" subtitle={`${staff.length} users`}>
+      <SearchFilter value={search} onChange={setSearch} placeholder="Search staff...">
+        <select className="input-field" style={{ width: isMobile ? '100%' : '140px' }} value={filterRole} onChange={e => setFilterRole(e.target.value)}>
           <option value="">All Roles</option>
           <option value="admin">Admin</option>
           <option value="staff">Staff</option>
         </select>
       </SearchFilter>
 
-      <div className="card" style={{ overflow: 'hidden' }}>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-light)' }}>Loading...</div>
-        ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-light)' }}>
-            <UserCog size={40} style={{ margin: '0 auto 12px', display: 'block', opacity: 0.25 }} />
-            No staff members found
-          </div>
-        ) : (
+      <div className="card" style={{ overflowX: 'auto' }}>
+        {loading ? <div style={{ padding: '40px', textAlign: 'center' }}>Loading...</div> : (
           <table className="data-table">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Joined</th>
-                <th></th>
-              </tr>
-            </thead>
+            <thead><tr><th>User</th>{!isMobile && <th>Email</th>}<th>Role</th><th></th></tr></thead>
             <tbody>
               {filtered.map(s => (
                 <tr key={s._id} className="clickable" onClick={() => navigate(`/dashboard/staff/${s._id}`)}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: s.role === 'admin' ? 'rgba(26,58,42,0.12)' : 'rgba(122,171,138,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--forest)', fontWeight: 700, fontSize: '13px', flexShrink: 0 }}>
+                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--bg-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700 }}>
                         {s.username[0].toUpperCase()}
                       </div>
-                      <span style={{ fontWeight: 600 }}>{s.username}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span>{s.username}</span>
+                        {isMobile && <span style={{ fontSize: '11px', color: 'var(--text-light)' }}>{s.email}</span>}
+                      </div>
                     </div>
                   </td>
-                  <td style={{ color: 'var(--text-mid)' }}>{s.email}</td>
+                  {!isMobile && <td style={{ color: 'var(--text-mid)' }}>{s.email}</td>}
                   <td><span className={`badge badge-${s.role}`}>{s.role}</span></td>
-                  <td style={{ color: 'var(--text-light)', fontSize: '13px' }}>{new Date(s.createdAt).toLocaleDateString()}</td>
-                  <td><ChevronRight size={16} color="var(--text-light)" /></td>
+                  <td><ChevronRight size={16}/></td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </div>
-      <p style={{ fontSize: '13px', color: 'var(--text-light)', marginTop: '12px' }}>Showing {filtered.length} of {staff.length} staff members</p>
     </DashLayout>
   );
 }
