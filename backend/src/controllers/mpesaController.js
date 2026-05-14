@@ -66,8 +66,7 @@ const stkPush = async (req, res) => {
       return res.status(400).json({ message: data.ResponseDescription || 'STK push failed' });
     }
   } catch (error) {
-    console.error('M-Pesa STK error:', JSON.stringify(error.response?.data, null, 2) || error.message);
-    console.error('STATUS:', error.response?.status);
+    console.error('M-Pesa STK error:', error.response?.data || error.message);
     res.status(500).json({ message: 'Failed to initiate M-Pesa payment' });
   }
 };
