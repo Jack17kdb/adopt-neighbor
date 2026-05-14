@@ -1,10 +1,10 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const { MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET, MPESA_SHORTCODE, MPESA_PASSKEY, MPESA_CALLBACK_URL, MPESA_INITIATOR_NAME, MPESA_INITIATOR_PASSWORD, MPESA_B2C_RESULT_URL, MPESA_B2C_TIMEOUT_URL } = process.env;
 
-// Track balance in memory (persists while server is running; swap for DB in production)
 let accountBalance = 0;
 let transactions = [];
 
@@ -12,7 +12,7 @@ const getAccessToken = async () => {
   const auth = Buffer.from(`${MPESA_CONSUMER_KEY}:${MPESA_CONSUMER_SECRET}`).toString('base64');
   const { data } = await axios.get(
     'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
-    { headers: { Authorization: `Basic ${auth}` } }
+    { headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/json' } }
   );
   return data.access_token;
 };
@@ -57,7 +57,7 @@ const stkPush = async (req, res) => {
     const { data } = await axios.post(
       'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
       payload,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+      { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
     );
 
     if (data.ResponseCode === '0') {
@@ -66,7 +66,8 @@ const stkPush = async (req, res) => {
       return res.status(400).json({ message: data.ResponseDescription || 'STK push failed' });
     }
   } catch (error) {
-    console.error('M-Pesa STK error:', error.response?.data || error.message);
+    console.error('M-Pesa STK error:', JSON.stringify(error.response?.data, null, 2) || error.message);
+    console.error('STATUS:', error.response?.status);
     res.status(500).json({ message: 'Failed to initiate M-Pesa payment' });
   }
 };
@@ -126,8 +127,6 @@ const withdraw = async (req, res) => {
 
     const accessToken = await getAccessToken();
 
-    // Security credential: base64 of initiator password encrypted with Safaricom public cert
-    // For sandbox we use the plain initiator password (Safaricom sandbox accepts this)
     const securityCredential = Buffer.from(MPESA_INITIATOR_PASSWORD || 'Safaricom999!').toString('base64');
 
     const payload = {
@@ -146,7 +145,7 @@ const withdraw = async (req, res) => {
     const { data } = await axios.post(
       'https://sandbox.safaricom.co.ke/mpesa/b2c/v3/paymentrequest',
       payload,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+      { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
     );
 
     if (data.ResponseCode === '0') {
