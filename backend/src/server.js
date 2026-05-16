@@ -34,7 +34,7 @@ app.use(helmet({
     directives: {
       'default-src': ["'self'"],
       'img-src': ["'self'", 'data:', 'https://res.cloudinary.com', 'https://*.googlesyndication.com', 'https://*.google.com', 'https://*.doubleclick.net', 'https://ep1.adtrafficquality.google'],
-      'script-src': ["'self'", "'unsafe-inline'", 'https://*.googlesyndication.com', 'https://www.googletagservices.com', 'https://adservice.google.com', 'https://*.google.com', 'https://*.adtrafficquality.google', 'https://adtrafficquality.google', 'https://ep2.adtrafficquality.google'],
+      'script-src': ["'self'", 'https://*.googlesyndication.com', 'https://www.googletagservices.com', 'https://adservice.google.com', 'https://*.google.com', 'https://*.adtrafficquality.google', 'https://adtrafficquality.google', 'https://ep2.adtrafficquality.google'],
       'frame-src': ["'self'", 'https://*.doubleclick.net', 'https://tpc.googlesyndication.com', 'https://*.google.com', 'https://ep2.adtrafficquality.google'],
       'connect-src': [
         "'self'",
@@ -46,6 +46,7 @@ app.use(helmet({
         'https://*.adtrafficquality.google',
         'https://*.google.com'
       ],
+      'style-src': ["'self'", "'unsafe-inline'"],
     }
   }
 }));

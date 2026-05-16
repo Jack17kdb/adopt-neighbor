@@ -3,7 +3,7 @@ import User from '../models/userModel.js';
 import Match from '../models/matchModel.js';
 import Volunteer from '../models/volunteerModel.js';
 import Neighbor from '../models/neighborModel.js';
-import staffWelcomeEmail from '../lib/emails.js';
+import { staffWelcomeEmail } from '../lib/emails.js';
 import sendEmail from '../lib/emailService.js';
 
 const getStaffMembers = async(req, res) => {

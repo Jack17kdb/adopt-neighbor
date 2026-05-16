@@ -14,7 +14,7 @@ export default function AdsPage() {
   const [file, setFile] = useState(null);
   const [form, setForm] = useState({
     businessName: '', businessEmail: '', title: '', description: '',
-    targetUrl: '', placement: 'DASHBOARD', durationDays: '30', amountPaid: '0', status: 'ACTIVE'
+    targetUrl: '', placement: 'hero-between', durationDays: '30', amountPaid: '0', status: 'ACTIVE'
   });
 
   useEffect(() => { fetchAds(); }, []);
@@ -198,9 +198,11 @@ export default function AdsPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
             <FormField label="Placement" required>
               <select className="input-field" value={form.placement} onChange={e => setForm({ ...form, placement: e.target.value })}>
-                <option value="DASHBOARD">Dashboard Sidebar</option>
-                <option value="HOME_BANNER">Home Top Banner</option>
-                <option value="SIDEBAR">General Sidebar</option>
+                <option value="hero-between">Hero Page — Between Sections</option>
+                <option value="hero-footer">Hero Page — Footer Strip</option>
+                <option value="hero-top">Volunteer &amp; Neighbor Forms — Top</option>
+                <option value="form-bottom">Volunteer &amp; Neighbor Forms — Bottom</option>
+                <option value="auth-bottom">Login Page — Bottom</option>
               </select>
             </FormField>
             <FormField label="Days to Show" required>

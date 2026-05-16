@@ -34,7 +34,13 @@ const adSchema = new mongoose.Schema({
 	},
 	placement: {
 		type: String,
-		enum: ["HOME_BANNER", "SIDEBAR", "DASHBOARD"],
+		enum: [
+			"hero-between",   // HeroPage — between sections (×2)
+			"hero-footer",    // HeroPage — footer strip (×1)
+			"hero-top",       // VolunteerForm & NeighborForm — above form (×1 each)
+			"form-bottom",    // VolunteerForm & NeighborForm — below form (×1 each)
+			"auth-bottom",    // LoginPage — below login card (×1)
+		],
 		required: true
 	},
 	durationDays: {
