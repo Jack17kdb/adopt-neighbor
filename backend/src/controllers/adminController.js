@@ -3,6 +3,8 @@ import User from '../models/userModel.js';
 import Match from '../models/matchModel.js';
 import Volunteer from '../models/volunteerModel.js';
 import Neighbor from '../models/neighborModel.js';
+import staffWelcomeEmail from '../lib/emails.js';
+import sendEmail from '../lib/emailService.js';
 
 const getStaffMembers = async(req, res) => {
 	try{
@@ -34,6 +36,14 @@ const addStaffMember = async(req, res) => {
 			password: hash,
 			role: "staff"
 		});
+
+		try {
+			const staffEmail = staffWelcomeEmail(newStaff.username, newStaff.email, newStaff.password);
+			await sendEmail({ to: newStaff.email, subject: staffEmail.subject, html: staffEmail.html });
+		} catch(error) {
+			console.log("Could not send staff welcome email: ", error.message);
+			res.status(500).json({ message: "Could not send staff welcome email" });
+		}
 
 		res.status(200).json({ message: "Staff member created successfully" });
 	} catch(error) {

@@ -137,7 +137,7 @@ export default function VolunteerForm() {
               </FormField>
             </div>
             <FormField label="Home Address" required><input className="input-field" value={form.address} onChange={e => set('address', e.target.value)} placeholder="123 Maple Street, Nairobi" required /></FormField>
-            <FormField label="How do you want to volunteer?" required><textarea className="input-field" value={form.comment} onChange={e => set('comment', e.target.value)} placeholder="Tell us about yourself and how you'd like to help eg. education, filing taxes, shopping etc." required /></FormField>
+            <FormField label="How do you want to volunteer?" required><textarea className="input-field" value={form.comment} onChange={e => set('comment', e.target.value)} placeholder="Tell us about yourself and how you'd like to help eg. education, medical appointments, shopping etc." required /></FormField>
             <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '15px', marginTop: '8px' }}>
               <Heart size={17} />{loading ? 'Submitting...' : 'Register as Volunteer'}
             </button>
