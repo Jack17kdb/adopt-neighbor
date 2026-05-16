@@ -6,7 +6,7 @@ import DashLayout from '../../components/DashLayout';
 import StatCard from '../../components/StatCard';
 import Modal from '../../components/Modal';
 import FormField from '../../components/FormField';
-import { Users, Heart, GitMerge, UserCog, Mail, CheckCircle, Wallet, ArrowDownLeft, ArrowUpRight, Smartphone, X, RefreshCw } from 'lucide-react';
+import { Users, Heart, GitMerge, UserCog, Mail, CheckCircle, Wallet, ArrowDownLeft, ArrowUpRight, Smartphone, X, RefreshCw, Megaphone } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const normalizePhone = (raw) => {
@@ -156,7 +156,10 @@ export default function Dashboard() {
               { label: 'View All Volunteers', to: '/dashboard/volunteers', icon: Users, color: 'var(--forest)' },
               { label: 'View All Neighbors', to: '/dashboard/neighbors', icon: Heart, color: 'var(--gold)' },
               { label: 'Manage Matches', to: '/dashboard/matches', icon: GitMerge, color: 'var(--forest-light)' },
-              ...(user?.role === 'admin' ? [{ label: 'Staff Members', to: '/dashboard/staff', icon: UserCog, color: '#6644cc' }] : []),
+              ...(user?.role === 'admin' ? [
+                { label: 'Staff Members', to: '/dashboard/staff', icon: UserCog, color: '#6644cc' },
+                { label: 'Advertisements', to: '/dashboard/ads', icon: Megaphone, color: '#e05638' }
+              ] : []),
             ].map(({ label, to, icon: Icon, color }) => (
               <button key={to} onClick={() => navigate(to)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', border: '1px solid var(--border)', borderRadius: '12px', background: 'white', cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'var(--text-dark)', fontWeight: 500 }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = color; e.currentTarget.style.background = `${color}08`; }}

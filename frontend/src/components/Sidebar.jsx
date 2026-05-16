@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
-import { LayoutDashboard, Users, Heart, GitMerge, UserCog, LogOut, Menu, X, Leaf } from 'lucide-react';
+import { LayoutDashboard, Users, Heart, GitMerge, UserCog, LogOut, Menu, X, Leaf, Megaphone } from 'lucide-react';
 
 export default function Sidebar() {
   const { user, logout } = useAuthStore();
@@ -20,7 +20,10 @@ export default function Sidebar() {
     { to: '/dashboard/volunteers', icon: Users, label: 'Volunteers' },
     { to: '/dashboard/neighbors', icon: Heart, label: 'Neighbors' },
     { to: '/dashboard/matches', icon: GitMerge, label: 'Matches' },
-    ...(user?.role === 'admin' ? [{ to: '/dashboard/staff', icon: UserCog, label: 'Staff Members' }] : []),
+    ...(user?.role === 'admin' ? [
+      { to: '/dashboard/staff', icon: UserCog, label: 'Staff Members' },
+      { to: '/dashboard/ads', icon: Megaphone, label: 'Advertisements' }
+    ] : []),
   ];
 
   return (

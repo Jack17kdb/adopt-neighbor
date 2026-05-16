@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import gsap from 'gsap';
 import { Leaf, LogIn, Eye, EyeOff } from 'lucide-react';
 import FormField from '../../components/FormField';
+import AdBanner from '../../components/AdBanner';
+import CustomAdBanner from '../../components/CustomAdBanner';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -67,14 +69,15 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-light)', marginTop: '24px' }}>
-          Need an account?{' '}
-          <Link to="/staff/register" style={{ color: 'var(--forest-light)', fontWeight: 600, textDecoration: 'none' }}>Register here</Link>
-        </p>
+
         <p style={{ textAlign: 'center', marginTop: '20px' }}>
           <Link to="/" style={{ fontSize: '13px', color: 'var(--text-light)', textDecoration: 'none' }}>← Back to homepage</Link>
         </p>
       </div>
+
+      {/* Ad below auth card */}
+      <AdBanner slot="3894664502" format="auto" />
+      <CustomAdBanner placement="auth-bottom" />
     </div>
   );
 }

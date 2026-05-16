@@ -15,7 +15,10 @@ const protect = async(req, res, next) => {
 		req.user = user;
 		next();
 	} catch(error) {
-		console.log("Error verifying token");
+		// FIX: was silently swallowing the error and never calling next() or returning a response
+		// which caused the request to hang forever when the token was invalid/expired
+		console.log("Error verifying token:", error.message);
+		return res.status(403).json({ message: "Unauthorized - Token invalid or expired" });
 	}
 };
 

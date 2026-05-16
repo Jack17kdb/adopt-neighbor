@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import gsap from 'gsap';
 import { Leaf, UserPlus, Eye, EyeOff } from 'lucide-react';
 import FormField from '../../components/FormField';
+import AdBanner from '../../components/AdBanner';
+import CustomAdBanner from '../../components/CustomAdBanner';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -78,6 +80,10 @@ export default function RegisterPage() {
           <Link to="/" style={{ fontSize: '13px', color: 'var(--text-light)', textDecoration: 'none' }}>← Back to homepage</Link>
         </p>
       </div>
+
+      {/* Ad below auth card */}
+      <AdBanner slot="3894664502" format="auto" />
+      <CustomAdBanner placement="auth-bottom" />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { Leaf, ArrowLeft, Users } from 'lucide-react';
 import FormField from '../../components/FormField';
 import AdBanner from '../../components/AdBanner';
+import CustomAdBanner from '../../components/CustomAdBanner';
 
 export default function NeighborForm() {
   const navigate = useNavigate();
@@ -132,6 +133,9 @@ export default function NeighborForm() {
           padding: '24px clamp(16px, 4vw, 24px) 40px'
         }}
       >
+        <AdBanner slot="3894664502" format="auto" />
+        <CustomAdBanner placement="hero-top" />
+
         <div
           ref={cardRef}
           style={{
@@ -290,24 +294,8 @@ export default function NeighborForm() {
           </p>
         </div>
 
-        <div
-          style={{
-            maxWidth: '560px',
-            width: '100%',
-            marginTop: '16px',
-            overflow: 'hidden'
-          }}
-        >
-          <AdBanner
-            slot="3894664502"
-            format="auto"
-            style={{
-              borderRadius: '12px',
-              overflow: 'hidden',
-              width: '100%'
-            }}
-          />
-        </div>
+        <AdBanner slot="3894664502" format="auto" />
+        <CustomAdBanner placement="form-bottom" />
       </div>
     </div>
   );

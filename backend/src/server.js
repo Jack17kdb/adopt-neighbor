@@ -11,6 +11,8 @@ import neighborRoutes from './routes/neighborRoutes.js';
 import matchRoutes from './routes/matchRoutes.js';
 import emailRoutes from './routes/emailRoutes.js';
 import mpesaRoutes from './routes/mpesaRoutes.js';
+import paypalRoutes from './routes/paypalRoutes.js';
+import adsRoutes from './routes/adsRoutes.js';
 import { logger, errorLogger } from './middleware/logger.js';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -60,6 +62,8 @@ app.use('/api/neighbors', neighborRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/mpesa', mpesaRoutes);
+app.use('/api/paypal', paypalRoutes);
+app.use('/api/ads', adsRoutes);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../frontend/dist')));

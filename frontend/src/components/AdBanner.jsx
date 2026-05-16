@@ -1,13 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export default function AdBanner({ slot, format = 'auto', layout, style = {}, className = '' }) {
   const location = useLocation();
   const adRef = useRef(null);
   const pushed = useRef(false);
+  const [filled, setFilled] = useState(false);
 
   useEffect(() => {
     pushed.current = false;
+    setFilled(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -20,13 +22,54 @@ export default function AdBanner({ slot, format = 'auto', layout, style = {}, cl
         }
       } catch (e) {}
     }, 100);
-    return () => clearTimeout(timer);
+
+    const checkFilled = setInterval(() => {
+      if (adRef.current) {
+        const status = adRef.current.getAttribute('data-ad-status');
+        const height = adRef.current.offsetHeight;
+        if (status === 'filled' || height > 0) {
+          setFilled(true);
+          clearInterval(checkFilled);
+        }
+      }
+    }, 500);
+
+    const timeout = setTimeout(() => clearInterval(checkFilled), 5000);
+
+    return () => { 
+      clearTimeout(timer); 
+      clearInterval(checkFilled); 
+      clearTimeout(timeout);
+    };
   }, [location.pathname]);
 
-  if (!slot) return null;
+  if (!slot || !filled) {
+    return (
+      <div style={{ display: 'none' }}>
+        <ins
+          ref={adRef}
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-2209522216706705"
+          data-ad-slot={slot}
+          data-ad-format={format}
+          data-full-width-responsive="true"
+          {...(layout ? { 'data-ad-layout': layout } : {})}
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className={className} style={{ overflow: 'hidden', textAlign: 'center', ...style }}>
+    <div
+      className={className}
+      style={{
+        overflow: 'hidden',
+        textAlign: 'center',
+        width: '100%',
+        ...style,
+      }}
+    >
       <ins
         ref={adRef}
         className="adsbygoogle"

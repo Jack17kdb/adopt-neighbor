@@ -25,14 +25,14 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  register: async (username, email, password) => {
+  addStaffMember: async (staffData) => {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await API.post('/auth/register', { username, email, password });
-      set({ user: data, isLoading: false, isCheckingAuth: false });
+      const { data } = await API.post('/admin/staff', staffData);
+      set({ isLoading: false });
       return data;
     } catch (err) {
-      const msg = err.response?.data?.message || 'Registration failed';
+      const msg = err.response?.data?.message || 'Failed to add staff member';
       set({ error: msg, isLoading: false });
       throw new Error(msg);
     }

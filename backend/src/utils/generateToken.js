@@ -8,8 +8,11 @@ const generateToken = (id, res) => {
 	res.cookie("token", token, {
 		maxAge: 7 * 24 * 60 * 60 * 1000,
 		httpOnly: true,
-		sameSite: process.env.NODE_ENV !== 'production' ? 'lax' : 'strict',
-		secure: process.env.NODE_ENV !== 'development',
+		// FIX: was 'strict' in production which blocks cookie on cross-origin redirects
+		// 'lax' allows cookie to be sent on top-level navigations and same-site requests
+		sameSite: 'lax',
+		// FIX: secure:true breaks localhost dev (http). Only enforce on production
+		secure: process.env.NODE_ENV === 'production',
 		path: '/'
 	});
 };

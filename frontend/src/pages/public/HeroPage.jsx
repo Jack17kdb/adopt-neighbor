@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Leaf, Heart, Users, Shield, Mail, ArrowRight, Star } from 'lucide-react';
 import AdBanner from '../../components/AdBanner';
+import CustomAdBanner from '../../components/CustomAdBanner';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -153,9 +154,8 @@ export default function HeroPage() {
       </section>
 
       {/* Ad: between stats and how-it-works */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 24px' }}>
-        <AdBanner slot="3894664502" format="auto" />
-      </div>
+      <AdBanner slot="3894664502" format="auto" />
+      <CustomAdBanner placement="hero-between" />
 
       {/* HOW IT WORKS */}
       <section ref={howRef} style={{ padding: '40px 24px 80px', maxWidth: '1100px', margin: '0 auto' }}>
@@ -214,9 +214,8 @@ export default function HeroPage() {
       </section>
 
       {/* Ad: between features and CTA */}
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px 0' }}>
-        <AdBanner slot="3894664502" format="auto" />
-      </div>
+      <AdBanner slot="3894664502" format="auto" />
+      <CustomAdBanner placement="hero-between" />
 
       {/* CTA */}
       <section className="cta-section" style={{ padding: '100px 24px', textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
@@ -240,6 +239,7 @@ export default function HeroPage() {
         </div>
         <p>Connecting communities with compassion · {new Date().getFullYear()}</p>
         <AdBanner slot="3894664502" format="horizontal" style={{ marginTop: '12px' }} />
+        <CustomAdBanner placement="hero-footer" />
       </footer>
     </div>
   );
